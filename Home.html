@@ -1,0 +1,679 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content="Portfolio" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="shortcut icon" href="#">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;700&display=swap"
+      rel="stylesheet"
+    />
+    <script
+      src="https://kit.fontawesome.com/fa62c117c7.js"
+      crossorigin="anonymous"
+    ></script>
+    <link rel="stylesheet" href="styles.css" />
+    <title>M&E Controls : Time Logs : Home</title>
+
+
+    <script type="module">
+
+      //console.log("HERE!!");
+
+      // Import the functions you need from the SDKs you need
+      import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.8/firebase-app.js";
+      import { getAnalytics } from "https://www.gstatic.com/firebasejs/9.6.8/firebase-analytics.js";
+      import { getDatabase } from "https://www.gstatic.com/firebasejs/9.6.8/firebase-database.js"
+
+      import { ref, set } from "https://www.gstatic.com/firebasejs/9.6.8/firebase-database.js"
+      import { child, get } from "https://www.gstatic.com/firebasejs/9.6.8/firebase-database.js"
+      import { onValue } from "https://www.gstatic.com/firebasejs/9.6.8/firebase-database.js"
+      import { getAuth, signInWithEmailAndPassword } from 'https://www.gstatic.com/firebasejs/9.6.8/firebase-auth.js';
+
+      const firebaseConfig = {
+
+        apiKey: "AIzaSyB1aP2HtjGQv4UXKj94fSciGaWayaEivvo",
+        authDomain: "mandetimebook.firebaseapp.com",
+        databaseURL: "https://mandetimebook-default-rtdb.europe-west1.firebasedatabase.app",
+        projectId: "mandetimebook",
+        storageBucket: "mandetimebook.appspot.com",
+        messagingSenderId: "137699696644",
+        appId: "1:137699696644:web:46f922af06a86db994d551",
+        measurementId: "G-HQ0J2H2P8L"
+      };
+
+      
+      document.getElementById("MESites").style.display = "none";
+      document.getElementById("veoliaSites").style.display = "none";
+      document.getElementById("epsSites").style.display = "none";
+      document.getElementById("DMPSites").style.display = "none";
+      document.getElementById("DonegalCoCoSites").style.display = "none";
+      document.getElementById("arasSites").style.display = "none";
+      
+      
+
+      
+
+
+      // Initialize Firebase
+      const app = initializeApp(firebaseConfig);
+      const analytics = getAnalytics(app);
+      // Get a reference to the database service
+      const database = getDatabase(app);
+      const db = getDatabase();
+      const dbRef = ref(getDatabase());
+
+      //console.log("HERE!!")
+
+
+      const auth = getAuth(app);
+
+      var uid = sessionStorage.getItem('uid');
+      
+
+
+      
+
+      
+
+      
+      // Get user data - email
+      const emailRef = ref(db, '/Users/' + uid + '/email');
+      onValue(emailRef, (snapshot) => {
+        var emaildata = snapshot.val();
+        document.getElementById("userEmail").innerHTML = emaildata;
+        
+      });
+
+      // Get user data - name
+      const nameRef = ref(db, '/Users/' + uid + '/name');
+      onValue(nameRef, (snapshot) => {
+        var namedata = snapshot.val();
+        document.getElementById("userName").innerHTML = namedata;
+        
+      });
+
+      // Get user data - uid
+      const uidRef = ref(db, '/Users/' + uid + '/uid');
+      onValue(uidRef, (snapshot) => {
+        var uiddata = snapshot.val();
+        document.getElementById("userUid").innerHTML = uiddata;
+        
+      });
+
+
+      function generateJobNumber(length) {
+        var characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+        var jobNumber = '';
+
+        for (var i = 0; i < length; i++) {
+          var randomIndex = Math.floor(Math.random() * characters.length);
+          jobNumber += characters.charAt(randomIndex);
+        }
+
+        return jobNumber;
+      }
+
+      function uploadJob(name, email,start,end,notes,client,hrsTaken,site,category){
+
+        var currentDate = new Date();
+
+        var year = currentDate.getFullYear();
+        var month = String(currentDate.getMonth() + 1).padStart(2, '0');
+        var day = String(currentDate.getDate()).padStart(2, '0');
+
+        var dateStamp = year + '-' + month + '-' + day;
+        
+
+        var jbNo = generateJobNumber(6);
+        //alert(jbNo);
+
+        jbNo = "JB0"+jbNo;
+        //alert(jbNo);
+
+        set(ref(db, '/Users/' + uid + '/Jobs/'+dateStamp+'/'+jbNo), {
+            name : name,
+            email : email,
+            start : start,
+            end : end,
+            notes : notes,
+            client : client,
+            hours : hrsTaken,
+            site : site,
+            category : category
+          });
+      }
+
+      function msg() {
+        alert("SMS has been sent to system contact list.\nManual SMS button will only work once every 1 minute.");
+      };
+      function msg2() {
+        alert("SMS system status will be toggled.\nSMS on/off button will only work once every 15 seconds.");
+      };
+      function msg3() {
+        alert("System data will be updated. Check for change in Last Update TimeStamp value.\nManual data update button will only work once every 1 minute.");
+      };
+
+      var logoutTimer;
+
+      function startLogoutTimer() {
+        logoutTimer = setTimeout(logout, 2 * 60 * 1000); // 15 minutes in milliseconds
+      }
+
+      function resetLogoutTimer() {
+        clearTimeout(logoutTimer);
+        startLogoutTimer();
+      }
+
+      function handleStartTimeInput() {
+
+        const startTimeInput = document.getElementById('startTime').value;
+        if (isValidTime(startTimeInput)) {
+          // Process the valid time input here, e.g., save it to a variable, send it to the server, etc.
+          console.log('Valid time input:', startTimeInput);
+        } else {
+          alert('Invalid start time format! Please enter a valid time in the format HH:mm (e.g., 7:00 or 16:45).');
+        }
+      }
+
+      function handleStopTimeInput() {
+
+        const stopTimeInput = document.getElementById('endTime').value;
+        if (isValidTime(stopTimeInput)) {
+          // Process the valid time input here, e.g., save it to a variable, send it to the server, etc.
+          console.log('Valid time input:', stopTimeInput);
+        } else {
+          alert('Invalid end time format! Please enter a valid time in the format HH:mm (e.g., 7:00 or 16:45).');
+        }
+      }
+
+      function isValidTime(timeString) {
+        // Regular expression to validate time in the format HH:mm
+        const timeRegex = /^(0?[0-9]|1[0-9]|2[0-3]):[0-5][0-9]$/;
+        return timeRegex.test(timeString);
+      }
+
+      function calculateTimeTaken(startTimeString, endTimeString) {
+        const startTime = parseTimeStringToDate(startTimeString);
+        const endTime = parseTimeStringToDate(endTimeString);
+
+        if (startTime && endTime) {
+          const timeDifferenceInMillis = endTime.getTime() - startTime.getTime();
+          const timeTakenInHours = timeDifferenceInMillis / (1000 * 60 * 60);
+          return timeTakenInHours;
+        } else {
+          return null;
+        }
+      }
+
+      function parseTimeStringToDate(timeString) {
+        const [hours, minutes] = timeString.split(':').map(Number);
+        if (isNaN(hours) || isNaN(minutes) || hours < 0 || hours > 23 || minutes < 0 || minutes > 59) {
+          return null;
+        }
+        const date = new Date();
+        date.setHours(hours, minutes, 0, 0);
+        return date;
+      }
+
+      function calculateAndUseTimeTaken() {
+        const startTimeString = document.getElementById('startTime').value;
+        const endTimeString = document.getElementById('endTime').value;
+
+        const timeTaken = calculateTimeTaken(startTimeString, endTimeString);
+
+        if (timeTaken !== null) {
+          // Use the 'timeTaken' value here or pass it to another function
+          console.log('Time taken:', timeTaken, 'hours');
+          var hoursTaken = timeTaken;
+          hoursTaken = Math.abs(hoursTaken);
+          hoursTaken = Math.round(hoursTaken);
+        } else {
+          alert('Invalid time input! Please enter valid start and end times in the format HH:mm.');
+        }
+        return hoursTaken;
+      }
+
+      // Example event listeners (you can customize this based on your specific application)
+      document.addEventListener("mousemove", resetLogoutTimer);
+      document.addEventListener("keydown", resetLogoutTimer);
+
+      function logout() {
+        alert("Logging User Out")
+        localStorage.clear();
+        window.location.href = "file:///Users/jonnylogue/Desktop/MandETime/public/launchPad.html";
+        
+      }
+
+
+      btn2.addEventListener('click',function(){
+        logout();
+
+      });
+      btn1.addEventListener('click', function() {
+
+        handleStartTimeInput();
+        handleStopTimeInput();
+
+        var hrsTaken = calculateAndUseTimeTaken();
+        
+        var userNameSpan = document.getElementById("userName");
+        var userName = userNameSpan.textContent;
+        var userEmailSpan = document.getElementById("userEmail");
+        var userEmail = userEmailSpan.textContent;
+        var startTimeValue = document.getElementById("startTime").value;
+        var endTimeValue = document.getElementById("endTime").value;
+        var workNoteValue = document.getElementById("workNote").value;
+
+
+        var client = document.getElementById("Client").value;
+        if(client=='option1'){
+          client = 'M&E Controls Ltd'
+        }else if(client=='option2'){
+          client = 'Veolia Ltd'
+        }else if(client=='option3'){
+          client = 'DMP - Carrigans'
+        }else if(client=='option4'){
+          client = 'Aras O Dohmhaill'
+        }else if(client=='option5'){
+          client = 'Donegal CoCo'
+        }else if(client=='option6'){
+          client = 'EPS'
+        }
+
+        if(client=='M&E Controls Ltd'){
+          var site = document.getElementById("MESites").value;
+          if(site=='option1'){
+            site = 'Workshop'
+          }
+        }else if(client=='Veolia Ltd'){
+          var site = document.getElementById("veoliaSites").value;
+          if(site=='option1'){
+            site = 'Milford WTP'
+          }else if(site=='option2'){
+            site = 'Carrigart WTP'
+          }else if(site=='option3'){
+            site = 'Cranford WTP'
+          }else if(site=='option4'){
+            site = 'Kilcar WTP'
+          }else if(site=='option5'){
+            site = 'Glenties WTP'
+          }else if(site=='option6'){
+            site = 'Kerrykel WWP'
+          }else if(site=='option7'){
+            site = 'Rathmullen WTP'
+          }else if(site=='option8'){
+            site = 'Swanlinbar WTP'
+          }else if(site=='option9'){
+            site = 'L.Mourne WTP'
+          }else if(site=='option10'){
+            site = 'L.Melvin WTP'
+          }else if(site=='option11'){
+            site = 'Burtonport WTP'
+          }else if(site=='option12'){
+            site = 'Glenade WWP'
+          }else if(site=='option13'){
+            site = 'Other'
+          }
+        }else if(client=='EPS'){
+          var site = document.getElementById("epsSites").value;
+          if(site=='option1'){
+            site = 'Crolly WTP'
+          }else if(site=='option2'){
+            site = 'Lettermacaward WTP'
+          }else if(site=='option3'){
+            site = 'Boreholes WTP'
+          }else if(site=='option4'){
+            site = 'Killybegs WTP'
+          }else if(site=='option5'){
+            site = 'Donegal Town WTP'
+          }else if(site=='option6'){
+            site = 'Other'
+          }
+        }else if(client=='DMP - Carrigans'){
+          var site = document.getElementById("DMPSites").value;
+          if(site=='option1'){
+            site = 'Effluent Plant'
+          }else if(site=='option2'){
+            site = 'Kill Floor'
+          }else if(site=='option3'){
+            site = 'Boning Hall'
+          }else if(site=='option4'){
+            site = 'Chills'
+          }else if(site=='option5'){
+            site = 'Cold Store'
+          }else if(site=='option6'){
+            site = 'Red Awful'
+          }else if(site=='option7'){
+            site = 'Green Awful'
+          }else if(site=='option8'){
+            site = 'Offices'
+          }else if(site=='option9'){
+            site = 'Other'
+          }
+        }else if(client=='Donegal CoCo'){
+          var site = document.getElementById("DonegalCoCoSites").value;
+          if(site=='option1'){
+            site = 'Eske WTP'
+          }else if(site=='option2'){
+            site = 'L.Melvin WTP'
+          }else if(site=='option3'){
+            site = 'Frosses WTP'
+          }else if(site=='option4'){
+            site = 'Bundoran Pump Station'
+          }else if(site=='option5'){
+            site = 'Raphoe Pump Station'
+          }else if(site=='option6'){
+            site = 'Clonmany WWP'
+          }else if(site=='option7'){
+            site = 'Ray WWP'
+          }else if(site=='option8'){
+            site = 'Clonmany WWP'
+          }else if(site=='option9'){
+            site = 'Other'
+          }
+        }else if(client=='Aras O Dohmhaill'){
+          var site = document.getElementById("arasSites").value;
+          if(site=='option1'){
+            site = 'Nursing Home'
+          }else if(site=='option2'){
+            site = 'Pellet Burner'
+          }else if(site=='option3'){
+            site = 'Outside Lights'
+          }else if(site=='option4'){
+            site = 'Sewage Station'
+          }else if(site=='option5'){
+            site = 'Other'
+          }
+        }
+
+        var category = document.getElementById("workType").value;
+        if(category=='option1'){
+          category = 'Mechanical'
+        }else if(category=='option2'){
+          category = 'Electrical'
+        }else if(category=='option3'){
+          category = 'Instrumentation'
+        }else if(category=='option4'){
+          category = 'Control / Automation'
+        }else if(category=='option5'){
+          category = 'Workshop / Stores / Materials'
+        }else if(category=='option6'){
+          category = 'Other'
+        }
+
+        uploadJob(userName,userEmail,startTimeValue,endTimeValue,workNoteValue,client,hrsTaken,site,category);
+
+        alert("Job Uploaded SUCCESSFUL")
+
+        
+          
+      });
+
+      document.getElementById("Client").addEventListener("change", function() {
+        var selectedOption = this.value;
+        //alert("Selected option: " + selectedOption);
+
+        if(selectedOption == "option1"){
+          document.getElementById("MESites").style.display = "block";
+          document.getElementById("veoliaSites").style.display = "none";
+          document.getElementById("epsSites").style.display = "none";
+          document.getElementById("DMPSites").style.display = "none";
+          document.getElementById("DonegalCoCoSites").style.display = "none";
+          document.getElementById("arasSites").style.display = "none";
+
+        }else if(selectedOption == "option2"){
+          document.getElementById("MESites").style.display = "none";
+          document.getElementById("veoliaSites").style.display = "block";
+          document.getElementById("epsSites").style.display = "none";
+          document.getElementById("DMPSites").style.display = "none";
+          document.getElementById("DonegalCoCoSites").style.display = "none";
+          document.getElementById("arasSites").style.display = "none";
+        }else if(selectedOption == "option3"){
+          document.getElementById("MESites").style.display = "none";
+          document.getElementById("veoliaSites").style.display = "none";
+          document.getElementById("epsSites").style.display = "none";
+          document.getElementById("DMPSites").style.display = "block";
+          document.getElementById("DonegalCoCoSites").style.display = "none";
+          document.getElementById("arasSites").style.display = "none";
+        }else if(selectedOption == "option4"){
+          document.getElementById("MESites").style.display = "none";
+          document.getElementById("veoliaSites").style.display = "none";
+          document.getElementById("epsSites").style.display = "none";
+          document.getElementById("DMPSites").style.display = "none";
+          document.getElementById("DonegalCoCoSites").style.display = "none";
+          document.getElementById("arasSites").style.display = "block";
+        }else if(selectedOption == "option5"){
+          document.getElementById("MESites").style.display = "none";
+          document.getElementById("veoliaSites").style.display = "none";
+          document.getElementById("epsSites").style.display = "none";
+          document.getElementById("DMPSites").style.display = "none";
+          document.getElementById("DonegalCoCoSites").style.display = "block";
+          document.getElementById("arasSites").style.display = "none";
+        }else if(selectedOption == "option6"){
+          document.getElementById("MESites").style.display = "none";
+          document.getElementById("veoliaSites").style.display = "none";
+          document.getElementById("epsSites").style.display = "block";
+          document.getElementById("DMPSites").style.display = "none";
+          document.getElementById("DonegalCoCoSites").style.display = "none";
+          document.getElementById("arasSites").style.display = "none";
+        }
+
+        // Perform any desired actions based on the selected option
+        // For example, update other parts of the code or trigger a function
+      });
+
+      
+          
+
+    
+    </script>
+
+
+
+
+  </head>
+
+  
+
+  <body class="light" id="top">
+    <header class="header center">
+      
+
+      <nav class="nav center">
+        
+
+        
+
+        <button
+          type="button"
+          aria-label="toggle navigation"
+          class="btn btn--icon nav__hamburger"
+        >
+          <i aria-hidden="true" class="fas fa-bars"></i>
+        </button>
+      </nav>
+    </header>
+
+    <main>
+      <!-- About -->
+      <div class="about center">
+
+        <h1><span class="about__name">M&E Controls Ltd</span></h1>
+        <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</p>
+        <h2>Time Logging</h2>
+        <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</p>
+        <h3 class="section__title">Home</h3>
+        
+        
+      </div>
+
+      <!-- Contact -->
+      <section class="section contact center" id="contact">
+
+        <p>User Logged in - Name - :          <span id="userName"></span>
+        </p>
+        <p>User Logged in - Email - :          <span id="userEmail"></span>
+        </p>
+        
+        
+        <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</p>
+        </p>
+
+        <label for="fname">Enter Your Work Details Below:</label>
+
+        <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</p>
+        
+        
+        <select id="Client">
+          <option value="option0">Select Client</option>
+          <option value="option1">M&E Controls Ltd</option>
+          <option value="option2">Veolia Water</option>
+          <option value="option3">DMP - Carrigans</option>
+          <option value="option4">Aras O Dohmhaill</option>
+          <option value="option5">Donegal CoCo</option>
+          <option value="option6">EPS</option>
+        </select>
+
+        <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</p>
+        
+        
+        
+        <select id="MESites">
+          <option value="option0">Select M&E Site</option>
+          <option value="option1">Workshop</option>
+          <option value="option2"></option>
+          <option value="option3"></option>
+          <option value="option4"></option>
+          <option value="option5"></option>
+          <option value="option6"></option>
+        </select>
+
+        <select id="veoliaSites">
+          <option value="option0">Select Veolia Site</option>
+          <option value="option1">Milford WTP</option>
+          <option value="option2">Carrigart WTP</option>
+          <option value="option3">Cranford WTP</option>
+          <option value="option4">Kilcar WTP</option>
+          <option value="option5">Glenties WTP</option>
+          <option value="option6">Kerrykel WWP</option>
+          <option value="option7">Rathmullen WTP</option>
+          <option value="option8">Swanlinbar WTP</option>
+          <option value="option9">L.Mourne WTP</option>
+          <option value="option10">L.Melvin WTP</option>
+          <option value="option11">Burtonport WTP</option>
+          <option value="option12">Glenade WWP</option>
+          <option value="option13">Other</option>
+        </select>
+
+        <select id="epsSites">
+          <option value="option0">Select EPS Site</option>
+          <option value="option1">Crolly WTP</option>
+          <option value="option2">Lettermacaward WTP</option>
+          <option value="option3">Boreholes WTP</option>
+          <option value="option4">Killybegs WTP</option>
+          <option value="option5">Donegal Town WTP</option>
+          <option value="option6">Other</option>
+        </select>
+
+        <select id="DMPSites">
+          <option value="option0">Select DMP Site</option>
+          <option value="option1">Effluent Plant</option>
+          <option value="option2">Kill Floor</option>
+          <option value="option3">Boning Hall</option>
+          <option value="option4">Chills</option>
+          <option value="option5">Cold Store</option>
+          <option value="option6">Red Awful</option>
+          <option value="option7">Green Awful</option>
+          <option value="option8">Offices</option>
+          <option value="option9">Other</option>
+        </select>
+
+        <select id="DonegalCoCoSites">
+          <option value="option0">Select Donegal CoCo Site</option>
+          <option value="option1">Eske WTP</option>
+          <option value="option2">L.Melvin WTP</option>
+          <option value="option3">Frosses WTP</option>
+          <option value="option4">Bundoran Pump Station</option>
+          <option value="option5">Raphoe Pump Station</option>
+          <option value="option6">Clonmany WWP</option>
+          <option value="option7">Ray WWP</option>
+          <option value="option8">Clonmany WWP</option>
+          <option value="option9">Other</option>
+        </select>
+
+        <select id="arasSites">
+          <option value="option0">Select Aras Site</option>
+          <option value="option1">Nursing Home</option>
+          <option value="option2">Pellet Burner</option>
+          <option value="option3">Outside Lights</option>
+          <option value="option4">Sewage Station</option>
+          <option value="option5">Other</option>
+        </select>
+
+        <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</p>
+        
+        
+        <select id="workType">
+          <option value="option1">Mechanical</option>
+          <option value="option2">Electrical</option>
+          <option value="option3">Instrumentation</option>
+          <option value="option4">Control / Automation</option>
+          <option value="option5">Workshop / Stores / Materials</option>
+          <option value="option6">Other</option>
+        </select>
+
+
+        <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</p>
+        </p>
+
+        <label for="fname">Enter Start - End Times. Use 24Hr Time Format</label>
+
+        <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</p>
+        <input type="text" id="startTime" name="startTime" maxlength = "5" placeholder="Enter Job Start Time - E.g. 7:00">
+
+        <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</p>
+        <input type="text" id="endTime" name="endTime" maxlength = "5" placeholder="Enter Job End Time - E.g. 16:45">
+
+         <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</p>
+         <label for="fname">Enter job specific notes & info.</label>
+        <textarea id="workNote" name="workNote" maxlength="300" placeholder="Enter Job Notes:" rows="4" cols="50"></textarea>
+
+          
+        <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</p>
+
+        <button id="btn1" class="btn btn--outline">submit</button>
+
+        <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</p>
+
+        <button id="btn2" class="btn btn--outline">logout</button>
+
+        
+        <div class="about__contact center">
+
+          
+        </div>
+      </div>
+
+      </section>
+    </main>
+
+    <footer class="footer">
+      
+      
+    </footer>
+
+    <div class="scroll-container">
+    <div class="scroll-top">
+      <a aria-label="Scroll up" href="#top">
+        <i aria-hidden="true" class="fas fa-arrow-up"></i>
+      </a>
+    </div>
+    </div>
+
+    <script src="./script.js"></script>
+  </body>
+</html>
