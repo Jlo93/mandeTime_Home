@@ -74,12 +74,6 @@
       var uid = sessionStorage.getItem('uid');
       
 
-
-      
-
-      
-
-      
       // Get user data - email
       const emailRef = ref(db, '/Users/' + uid + '/email');
       onValue(emailRef, (snapshot) => {
@@ -534,8 +528,6 @@
 
         <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</p>
         
-        
-        
         <select id="MESites">
           <option value="option0">Select M&E Site</option>
           <option value="option1">Main Plant</option>
@@ -605,6 +597,15 @@
           <option value="option2">Pellet Burner</option>
           <option value="option3">Outside Lights</option>
           <option value="option4">Sewage Station</option>
+          <option value="option5">Other</option>
+        </select>
+
+        <select id="murphySites">
+          <option value="option0">Select Murphy Site</option>
+          <option value="option1"></option>
+          <option value="option2"></option>
+          <option value="option3"></option>
+          <option value="option4"></option>
           <option value="option5">Other</option>
         </select>
 
