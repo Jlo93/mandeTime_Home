@@ -277,6 +277,8 @@
           client = 'Donegal CoCo'
         }else if(client=='option6'){
           client = 'EPS'
+        }else if(client=='option7'){
+          client = 'Murphys'
         }
 
         if(client=='M&E Controls Ltd'){
@@ -422,7 +424,7 @@
           document.getElementById("DMPSites").style.display = "none";
           document.getElementById("DonegalCoCoSites").style.display = "none";
           document.getElementById("arasSites").style.display = "none";
-
+          document.getElementById("murphySites").style.display = "none";
         }else if(selectedOption == "option2"){
           document.getElementById("MESites").style.display = "none";
           document.getElementById("veoliaSites").style.display = "block";
@@ -430,6 +432,7 @@
           document.getElementById("DMPSites").style.display = "none";
           document.getElementById("DonegalCoCoSites").style.display = "none";
           document.getElementById("arasSites").style.display = "none";
+          document.getElementById("murphySites").style.display = "none";
         }else if(selectedOption == "option3"){
           document.getElementById("MESites").style.display = "none";
           document.getElementById("veoliaSites").style.display = "none";
@@ -437,6 +440,7 @@
           document.getElementById("DMPSites").style.display = "block";
           document.getElementById("DonegalCoCoSites").style.display = "none";
           document.getElementById("arasSites").style.display = "none";
+          document.getElementById("murphySites").style.display = "none";
         }else if(selectedOption == "option4"){
           document.getElementById("MESites").style.display = "none";
           document.getElementById("veoliaSites").style.display = "none";
@@ -444,6 +448,7 @@
           document.getElementById("DMPSites").style.display = "none";
           document.getElementById("DonegalCoCoSites").style.display = "none";
           document.getElementById("arasSites").style.display = "block";
+          document.getElementById("murphySites").style.display = "none";
         }else if(selectedOption == "option5"){
           document.getElementById("MESites").style.display = "none";
           document.getElementById("veoliaSites").style.display = "none";
@@ -451,6 +456,7 @@
           document.getElementById("DMPSites").style.display = "none";
           document.getElementById("DonegalCoCoSites").style.display = "block";
           document.getElementById("arasSites").style.display = "none";
+          document.getElementById("murphySites").style.display = "none";
         }else if(selectedOption == "option6"){
           document.getElementById("MESites").style.display = "none";
           document.getElementById("veoliaSites").style.display = "none";
@@ -458,6 +464,15 @@
           document.getElementById("DMPSites").style.display = "none";
           document.getElementById("DonegalCoCoSites").style.display = "none";
           document.getElementById("arasSites").style.display = "none";
+          document.getElementById("murphySites").style.display = "none";
+        }else if(selectedOption == "option7"){
+          document.getElementById("MESites").style.display = "none";
+          document.getElementById("veoliaSites").style.display = "none";
+          document.getElementById("epsSites").style.display = "none";
+          document.getElementById("DMPSites").style.display = "none";
+          document.getElementById("DonegalCoCoSites").style.display = "none";
+          document.getElementById("arasSites").style.display = "none";
+          document.getElementById("murphySites").style.display = "block";
         }
         // Perform any desired actions based on the selected option
         // For example, update other parts of the code or trigger a function
@@ -525,6 +540,7 @@
           <option value="option4">Aras O Dohmhaill</option>
           <option value="option5">Donegal CoCo</option>
           <option value="option6">EPS</option>
+          <option value="option7">Murphys</option>
         </select>
 
         <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</p>
@@ -603,7 +619,7 @@
 
         <select id="murphySites">
           <option value="option0">Select Murphy Site</option>
-          <option value="option1"></option>
+          <option value="option1">Main Plant</option>
           <option value="option2"></option>
           <option value="option3"></option>
           <option value="option4"></option>
