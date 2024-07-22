@@ -22,8 +22,17 @@ html {
 body {
   font-family: "Poppins", sans-serif;
   line-height: 1.5;
+  /*edits*/
+  margin:0;
+  padding:0;
+  /*END*/
   color: var(--clr-fg);
   background-color: var(--clr-bg);
+}
+
+/*Edits*/
+.center{
+  text-align:center;
 }
 
 .light {
